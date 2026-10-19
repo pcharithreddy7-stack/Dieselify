@@ -35,31 +35,42 @@ const setCurrentNavigationLink = (sectionId) => {
 const updateCurrentNavigationLink = () => {
   if (!navigationSections.length) return;
   const headerHeight = document.querySelector('[data-header]')?.offsetHeight ?? 80;
-  const activationLine = headerHeight + (window.innerHeight * 0.35);
+  // Use a line just below the fixed header. Calculating against the document
+  // position keeps this reliable during smooth anchor scrolling on mobile too.
+  const activationLine = window.scrollY + headerHeight + (window.innerHeight * 0.35);
   let currentSection = navigationSections[0];
 
   navigationSections.forEach((section) => {
-    if (section.getBoundingClientRect().top <= activationLine) currentSection = section;
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+    if (sectionTop <= activationLine) currentSection = section;
   });
 
   setCurrentNavigationLink(currentSection.id);
 };
 
 let navigationTicking = false;
-window.addEventListener('scroll', () => {
+const scheduleNavigationUpdate = () => {
   if (navigationTicking) return;
   navigationTicking = true;
   window.requestAnimationFrame(() => {
     updateCurrentNavigationLink();
     navigationTicking = false;
   });
-}, { passive: true });
-window.addEventListener('resize', updateCurrentNavigationLink);
+};
+
+// Listen on both scrolling targets: browsers differ in whether a page scroll
+// is surfaced on window or document, particularly after a hash-link jump.
+window.addEventListener('scroll', scheduleNavigationUpdate, { passive: true });
+document.addEventListener('scroll', scheduleNavigationUpdate, { passive: true });
+window.addEventListener('resize', scheduleNavigationUpdate);
+window.addEventListener('hashchange', scheduleNavigationUpdate);
+window.addEventListener('pageshow', scheduleNavigationUpdate);
 navigationLinks.forEach((link) => link.addEventListener('click', () => {
   const sectionId = link.getAttribute('href')?.slice(1);
   if (sectionId) setCurrentNavigationLink(sectionId);
+  window.setTimeout(scheduleNavigationUpdate, 0);
 }));
-updateCurrentNavigationLink();
+scheduleNavigationUpdate();
 
 const servicesCarousel = document.querySelector('[data-services-carousel]');
 
