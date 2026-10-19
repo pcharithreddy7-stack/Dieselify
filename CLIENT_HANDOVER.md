@@ -97,7 +97,21 @@ Google Analytics 4 is installed with measurement ID **G-Y39XHBC2K8**.
 
 After a website deployment, Google Analytics can take a few minutes to display Realtime traffic and up to 24–48 hours to remove its initial “data collection isn’t active” message. To test it, visit the live website in a normal browser and then check **Google Analytics → Reports → Realtime**.
 
-## 7. Domain and hosting
+## 7. Technologies used
+
+| Area | Technology | Purpose |
+| --- | --- | --- |
+| Website interface | HTML5, CSS3, JavaScript | Responsive public website, navigation, animations, and quote form |
+| Hosting and delivery | Cloudflare | Secure static-site hosting, HTTPS, caching, deployment, and security headers |
+| Source control | Git and GitHub | Version history, code storage, and deployment source |
+| Backend | Supabase Edge Functions (TypeScript / Deno) | Validates quote requests and sends email securely without exposing secrets to visitors |
+| Database | Supabase PostgreSQL | Stores enquiry records and quote reference numbers |
+| Data protection | Supabase Vault, PostgreSQL Row Level Security, pgcrypto | Protects encryption keys, encrypts enquiry details, and blocks public database access |
+| Transactional email | Resend | Sends quote-request notifications to the Dieselify team |
+| Website analytics | Google Analytics 4 | Measures website visits and visitor activity |
+| Domain and DNS | GoDaddy | Domain registration and DNS record management |
+
+## 8. Domain and hosting
 
 The intended public domain is:
 
@@ -108,7 +122,7 @@ The recommended domain setup is a permanent redirect from `www.dieselify.co` to 
 
 The source code is maintained in the Dieselify GitHub repository. Changes pushed to the `main` branch are deployed through the connected hosting service.
 
-## 8. Administration access to retain securely
+## 9. Administration access to retain securely
 
 The business owner should retain ownership and recovery access for these accounts:
 
@@ -121,13 +135,13 @@ The business owner should retain ownership and recovery access for these account
 
 Enable two-factor authentication on each account. Do not share passwords, API keys, backend service keys, or rate-limit secrets in chat messages, documents, or public repositories.
 
-## 9. Routine website updates
+## 10. Routine website updates
 
 Common changes include service descriptions, contact details, office address, images, and FAQ content. These should be updated in the source files, reviewed on a preview deployment, and then published through the normal GitHub deployment process.
 
 For an operational change to the enquiry system—such as changing the receiving email address, sending domain, rate limit, or email provider—update the protected backend configuration rather than putting credentials into `script.js` or `index.html`.
 
-## 10. Launch and monthly checklist
+## 11. Launch and monthly checklist
 
 ### Before launch
 
@@ -147,7 +161,7 @@ For an operational change to the enquiry system—such as changing the receiving
 - [ ] Confirm the domain, hosting, and backend accounts remain active and billing details are current.
 - [ ] Keep account recovery details and two-factor authentication current.
 
-## 11. Support information
+## 12. Support information
 
 For a technical issue, provide the following when requesting support:
 
