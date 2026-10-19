@@ -18,11 +18,11 @@ Open **Supabase Dashboard → SQL Editor**, paste the contents of `supabase/migr
 
 ## 3. Set Edge Function secrets
 
-Create a Resend account and verify a sending domain. Then set these secrets in **Edge Functions → Secrets**, or using the CLI below. Use your production site’s exact HTTPS origin without a trailing slash.
+Create a Resend account and verify a sending domain. Then set these secrets in **Edge Functions → Secrets**, or using the CLI below. `ALLOWED_ORIGINS` accepts one or more exact, comma-separated HTTPS origins without trailing slashes.
 
 ```bash
 supabase secrets set --project-ref YOUR_PROJECT_REF \
-  ALLOWED_ORIGIN=https://www.dieselify.co \
+  ALLOWED_ORIGINS=https://dieselify.co,https://www.dieselify.co \
   QUOTE_TO_EMAIL=connect@dieselify.co \
   QUOTE_FROM_EMAIL='Dieselify Website <quotes@your-verified-domain.com>' \
   RESEND_API_KEY=re_your_resend_key \
@@ -39,7 +39,7 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase functions deploy submit-quote
 ```
 
-The included `supabase/config.toml` deliberately makes this function public because website visitors are not logged in. It instead permits only `ALLOWED_ORIGIN`, limits each privacy-preserving IP hash to five requests/hour, validates input server-side, uses a honeypot, and rejects all database access from `anon` and `authenticated` roles.
+The included `supabase/config.toml` deliberately makes this function public because website visitors are not logged in. It instead permits only `ALLOWED_ORIGINS`, limits each privacy-preserving IP hash to five requests/hour, validates input server-side, uses a honeypot, and rejects all database access from `anon` and `authenticated` roles.
 
 ## 5. Test
 

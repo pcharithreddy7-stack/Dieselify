@@ -11,7 +11,10 @@ type QuotePayload = {
   note: string;
 };
 
-const allowedOrigin = (Deno.env.get('ALLOWED_ORIGIN') ?? '').replace(/\/$/, '');
+const allowedOrigins = (Deno.env.get('ALLOWED_ORIGINS') ?? Deno.env.get('ALLOWED_ORIGIN') ?? '')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
 const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
 const secretKeys = (() => {
   try {
@@ -26,9 +29,10 @@ const resendKey = Deno.env.get('RESEND_API_KEY') ?? '';
 const quoteToEmail = Deno.env.get('QUOTE_TO_EMAIL') ?? '';
 const quoteFromEmail = Deno.env.get('QUOTE_FROM_EMAIL') ?? '';
 const rateLimitPepper = Deno.env.get('RATE_LIMIT_PEPPER') ?? '';
+const isAllowedOrigin = (origin: string | null) => origin !== null && allowedOrigins.includes(origin);
 
 const corsHeaders = (origin: string | null) => ({
-  'Access-Control-Allow-Origin': origin === allowedOrigin ? allowedOrigin : 'null',
+  'Access-Control-Allow-Origin': isAllowedOrigin(origin) ? origin : 'null',
   'Access-Control-Allow-Headers': 'content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Vary': 'Origin',
@@ -97,7 +101,7 @@ const emailHtml = (quote: QuotePayload) => {
 
 Deno.serve(async (request) => {
   const origin = request.headers.get('origin');
-  if (!allowedOrigin || origin !== allowedOrigin) {
+  if (!isAllowedOrigin(origin)) {
     return response(request, { ok: false, message: 'Request origin is not allowed.' }, 403);
   }
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) });
