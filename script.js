@@ -30,6 +30,12 @@ const setCurrentNavigationLink = (sectionId) => {
     if (isCurrent) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
+
+  // Keep the shared URL in sync with the section being viewed without adding
+  // a browser-history entry for every small scroll movement.
+  if (window.location.hash !== `#${sectionId}`) {
+    window.history.replaceState(null, '', `#${sectionId}`);
+  }
 };
 
 const updateCurrentNavigationLink = () => {
