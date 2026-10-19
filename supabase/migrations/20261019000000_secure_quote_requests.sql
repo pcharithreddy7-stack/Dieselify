@@ -3,6 +3,7 @@
 -- update, or delete these tables.
 
 create extension if not exists pgcrypto with schema extensions;
+create sequence if not exists public.quote_order_number_seq start with 1;
 
 -- Generate an encryption key inside Vault so the key is not committed or
 -- copied into the Edge Function environment. This block is safe to re-run.
@@ -22,6 +23,7 @@ $$;
 
 create table if not exists public.quote_requests (
   id uuid primary key default extensions.gen_random_uuid(),
+  order_number bigint not null unique default nextval('public.quote_order_number_seq'),
   request_id uuid not null unique,
   encrypted_payload bytea not null,
   email_status text not null default 'pending'

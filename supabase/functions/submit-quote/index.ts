@@ -93,10 +93,10 @@ const sha256 = async (value: string) => {
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
-const emailHtml = (quote: QuotePayload) => {
+const emailHtml = (quote: QuotePayload, orderNumber: number) => {
   const field = (label: string, value: string) =>
     `<tr><th align="left" style="padding:6px 12px 6px 0">${label}</th><td style="padding:6px 0;white-space:pre-wrap">${escapeHtml(value || '—')}</td></tr>`;
-  return `<h2>New Dieselify quote request</h2><table>${field('Name', quote.name)}${field('Phone', quote.phone)}${field('Email', quote.email)}${field('Company', quote.company)}${field('Quantity (L)', quote.quantity)}${field('Address', quote.address)}${field('Google Maps', quote.maps)}${field('Note', quote.note)}</table>`;
+  return `<h2>New Dieselify quote request #D${orderNumber}</h2><table>${field('Quote number', `#D${orderNumber}`)}${field('Name', quote.name)}${field('Phone', quote.phone)}${field('Email', quote.email)}${field('Company', quote.company)}${field('Quantity (L)', quote.quantity)}${field('Address', quote.address)}${field('Google Maps', quote.maps)}${field('Note', quote.note)}</table>`;
 };
 
 Deno.serve(async (request) => {
@@ -132,12 +132,14 @@ Deno.serve(async (request) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const { data: submissionId, error: saveError } = await admin.rpc('save_quote_submission', {
+    const { data: savedQuote, error: saveError } = await admin.rpc('save_quote_submission_with_order_number', {
       p_payload: quote,
       p_ip_hash: ipHash,
       p_request_id: requestId,
     });
-    if (saveError || !submissionId) {
+    const submissionId = savedQuote?.submissionId;
+    const orderNumber = savedQuote?.orderNumber;
+    if (saveError || typeof submissionId !== 'string' || !Number.isSafeInteger(orderNumber) || orderNumber < 1) {
       const tooManyRequests = saveError?.message.includes('Too many requests');
       return response(request, {
         ok: false,
@@ -156,8 +158,8 @@ Deno.serve(async (request) => {
         from: quoteFromEmail,
         to: [quoteToEmail],
         reply_to: quote.email,
-        subject: 'New Dieselify quote request',
-        html: emailHtml(quote),
+        subject: `[#D${orderNumber}] New Dieselify quote request`,
+        html: emailHtml(quote, orderNumber),
       }),
     });
 

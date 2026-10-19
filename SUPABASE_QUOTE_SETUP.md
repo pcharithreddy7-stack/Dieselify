@@ -14,7 +14,7 @@ Do **not** put the recipient email in `script.js`. Configure it privately in the
 
 ## 2. Create the database objects
 
-Open **Supabase Dashboard → SQL Editor**, paste the contents of `supabase/migrations/20261019000000_secure_quote_requests.sql`, and run it once. It enables RLS, removes browser table access, creates a Vault-held encryption key, encrypts each stored response with AES-256 PGP encryption, and grants the two database functions only to `service_role`.
+Open **Supabase Dashboard → SQL Editor** and run both migration files in filename order: `20261019000000_secure_quote_requests.sql`, then `20261019010000_add_quote_order_numbers.sql`. They enable RLS, remove browser table access, create a Vault-held encryption key, encrypt each stored response with AES-256 PGP encryption, and assign every quote an immutable sequential number (`#D1`, `#D2`, and so on).
 
 ## 3. Set Edge Function secrets
 
