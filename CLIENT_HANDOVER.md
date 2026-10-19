@@ -97,19 +97,39 @@ Google Analytics 4 is installed with measurement ID **G-Y39XHBC2K8**.
 
 After a website deployment, Google Analytics can take a few minutes to display Realtime traffic and up to 24–48 hours to remove its initial “data collection isn’t active” message. To test it, visit the live website in a normal browser and then check **Google Analytics → Reports → Realtime**.
 
-## 7. Technologies used
+## 7. Technologies used and why
 
-| Area | Technology | Purpose |
+| Area | Technology | Why it is used |
 | --- | --- | --- |
-| Website interface | HTML5, CSS3, JavaScript | Responsive public website, navigation, animations, and quote form |
-| Hosting and delivery | Cloudflare | Secure static-site hosting, HTTPS, caching, deployment, and security headers |
-| Source control | Git and GitHub | Version history, code storage, and deployment source |
-| Backend | Supabase Edge Functions (TypeScript / Deno) | Validates quote requests and sends email securely without exposing secrets to visitors |
-| Database | Supabase PostgreSQL | Stores enquiry records and quote reference numbers |
-| Data protection | Supabase Vault, PostgreSQL Row Level Security, pgcrypto | Protects encryption keys, encrypts enquiry details, and blocks public database access |
-| Transactional email | Resend | Sends quote-request notifications to the Dieselify team |
-| Website analytics | Google Analytics 4 | Measures website visits and visitor activity |
-| Domain and DNS | GoDaddy | Domain registration and DNS record management |
+| Website interface | HTML5, CSS3, JavaScript | These are fast, widely supported browser technologies. They create the responsive website, navigation, animations, and quote form without requiring visitors to install anything. |
+| Hosting and delivery | Cloudflare | Delivers the website globally over HTTPS, provides caching for fast loading, deploys the published site, and applies security headers. |
+| Source control | Git and GitHub | Maintains a complete change history, gives the business a recoverable copy of the website, and provides the source for automated deployments. |
+| Backend | Supabase Edge Functions (TypeScript / Deno) | Receives quote requests securely on the server, validates them, applies anti-spam controls, and keeps sensitive email credentials out of the public website. |
+| Database | Supabase PostgreSQL | Provides reliable storage for quote records, email delivery status, and the sequential `#D` enquiry reference number. |
+| Data protection | Supabase Vault, PostgreSQL Row Level Security, pgcrypto | Keeps encryption keys in a protected vault, encrypts enquiry details, and prevents website visitors from directly accessing or changing database records. |
+| Transactional email | Resend | Delivers formatted quote notifications reliably to the Dieselify team and supports a branded sending domain. |
+| Website analytics | Google Analytics 4 | Shows visitor traffic and engagement, helping Dieselify understand website performance and marketing results. |
+| Domain and DNS | GoDaddy | Manages ownership of the Dieselify domain and the DNS records that point the domain to website hosting and email services. |
+
+### Website and enquiry flow
+
+```mermaid
+flowchart TD
+    A[Visitor opens dieselify.co] --> B[GoDaddy DNS]
+    B --> C[Cloudflare hosting]
+    C --> D[Dieselify website<br/>HTML, CSS and JavaScript]
+    D --> E[Google Analytics 4<br/>anonymous visit measurement]
+    D --> F[Visitor submits quote form]
+    F --> G[Supabase Edge Function<br/>validation and anti-spam checks]
+    G --> H[Supabase Vault + PostgreSQL<br/>encrypted quote record and #D reference]
+    G --> I[Resend email service]
+    I --> J[connect@dieselify.co<br/>new quote notification]
+
+    K[Website changes] --> L[GitHub repository]
+    L --> C
+```
+
+The public website never receives database service keys, email API keys, encryption keys, or other backend secrets. Those remain in the protected backend configuration.
 
 ## 8. Domain and hosting
 
