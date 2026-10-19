@@ -1,0 +1,9 @@
+# Local Supabase CLI state and local environment files
+supabase/.temp/
+supabase/functions/.env
+.env
+.env.*
+!.env.example
+
+# Operating-system files
+.DS_Store

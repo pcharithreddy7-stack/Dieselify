@@ -1,0 +1,4 @@
+# A public contact form has no signed-in user. The function itself restricts
+# browser origins, validates every field, uses a honeypot, and rate-limits IPs.
+[functions.submit-quote]
+verify_jwt = false
