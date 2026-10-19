@@ -184,6 +184,7 @@ h1 { max-width: 654px; margin: 0; font-size: 56px; font-weight: 800; line-height
 /* Precise contact and FAQ geometry from the Figma contact breakpoints. */
 .quote-form label > span { display: block; }
 .quote-form label > span b { display: inline; margin-left: 2px; }
+.quote-form label > span small { color: rgba(44,44,44,.62); font-size: .8em; font-weight: 500; }
 .quote-form .form-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .quote-form button:disabled { cursor: wait; opacity: .72; }
 .quote-form__status.is-error { color: #b42318; }

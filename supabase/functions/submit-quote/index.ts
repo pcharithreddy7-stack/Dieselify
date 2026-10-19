@@ -69,12 +69,6 @@ const validatePayload = (body: Record<string, unknown>): QuotePayload => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Email address is invalid.');
   if (!/^[0-9+()\-\s]{7,30}$/.test(phone)) throw new Error('Phone number is invalid.');
   if (!/^[1-9]\d{0,6}$/.test(quantity)) throw new Error('Diesel quantity is invalid.');
-  if (maps) {
-    let url: URL;
-    try { url = new URL(maps); } catch { throw new Error('Google Maps link is invalid.'); }
-    if (url.protocol !== 'https:') throw new Error('Google Maps link must use HTTPS.');
-  }
-
   return {
     name: requiredText(body.name, 'Full name', 120),
     phone,
