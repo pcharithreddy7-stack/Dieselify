@@ -1,0 +1,12 @@
+# Only public website assets should be uploaded by Cloudflare Workers Static Assets.
+.git/
+.github/
+supabase/
+SUPABASE_QUOTE_SETUP.md
+.gitignore
+.assetsignore
+wrangler.jsonc
+wrangler.toml
+package.json
+package-lock.json
+node_modules/
