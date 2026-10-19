@@ -14,6 +14,53 @@ nav?.querySelectorAll('a').forEach((link) => {
   });
 });
 
+// Keep the navigation in sync with the section currently being read.
+const navigationLinks = [...(nav?.querySelectorAll('a[href^="#"]') ?? [])];
+const navigationSections = navigationLinks
+  .map((link) => {
+    const id = link.getAttribute('href')?.slice(1);
+    return id ? document.getElementById(id) : null;
+  })
+  .filter(Boolean);
+
+const setCurrentNavigationLink = (sectionId) => {
+  navigationLinks.forEach((link) => {
+    const isCurrent = link.getAttribute('href') === `#${sectionId}`;
+    link.classList.toggle('is-current', isCurrent);
+    if (isCurrent) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+};
+
+const updateCurrentNavigationLink = () => {
+  if (!navigationSections.length) return;
+  const headerHeight = document.querySelector('[data-header]')?.offsetHeight ?? 80;
+  const activationLine = headerHeight + (window.innerHeight * 0.35);
+  let currentSection = navigationSections[0];
+
+  navigationSections.forEach((section) => {
+    if (section.getBoundingClientRect().top <= activationLine) currentSection = section;
+  });
+
+  setCurrentNavigationLink(currentSection.id);
+};
+
+let navigationTicking = false;
+window.addEventListener('scroll', () => {
+  if (navigationTicking) return;
+  navigationTicking = true;
+  window.requestAnimationFrame(() => {
+    updateCurrentNavigationLink();
+    navigationTicking = false;
+  });
+}, { passive: true });
+window.addEventListener('resize', updateCurrentNavigationLink);
+navigationLinks.forEach((link) => link.addEventListener('click', () => {
+  const sectionId = link.getAttribute('href')?.slice(1);
+  if (sectionId) setCurrentNavigationLink(sectionId);
+}));
+updateCurrentNavigationLink();
+
 const servicesCarousel = document.querySelector('[data-services-carousel]');
 
 if (servicesCarousel) {
